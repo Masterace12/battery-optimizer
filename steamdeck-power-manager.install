@@ -1,0 +1,50 @@
+#!/bin/bash
+# post_install/post_upgrade script for steamdeck-power-manager
+
+post_install() {
+    echo "Setting up directories..."
+    mkdir -p /var/lib/steamdeck-power-manager
+    mkdir -p /var/log/steamdeck-power-manager
+    chown root:root /var/lib/steamdeck-power-manager
+    chown root:root /var/log/steamdeck-power-manager
+    chmod 750 /var/lib/steamdeck-power-manager
+    chmod 750 /var/log/steamdeck-power-manager
+
+    echo "Enabling systemd services..."
+    systemctl enable steamdeck-power-manager-monitor.service
+    systemctl enable steamdeck-power-manager-control.service
+    
+    if [ "$1" = "1" ]; then  # fresh install
+        echo "Starting services..."
+        systemctl start steamdeck-power-manager-monitor.service
+        systemctl start steamdeck-power-manager-control.service
+    else  # upgrade
+        echo "Restarting services..."
+        systemctl restart steamdeck-power-manager-monitor.service
+        systemctl restart steamdeck-power-manager-control.service
+    fi
+    
+    echo "Steam Deck Power Manager installed and services enabled"
+    echo "Check status with: systemctl status steamdeck-power-manager-*.service"
+}
+
+post_upgrade() {
+    post_install "$1"
+}
+
+pre_remove() {
+    echo "Stopping services..."
+    systemctl stop steamdeck-power-manager-monitor.service 2>/dev/null || true
+    systemctl stop steamdeck-power-manager-control.service 2>/dev/null || true
+    
+    echo "Disabling services..."
+    systemctl disable steamdeck-power-manager-monitor.service 2>/dev/null || true
+    systemctl disable steamdeck-power-manager-control.service 2>/dev/null || true
+}
+
+post_remove() {
+    echo "Steam Deck Power Manager removed"
+    echo "You may want to remove the data directories manually if desired:"
+    echo "  - /var/lib/steamdeck-power-manager/"
+    echo "  - /var/log/steamdeck-power-manager/"
+}

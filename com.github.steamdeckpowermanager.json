@@ -1,0 +1,27 @@
+{
+    "app-id": "com.github.steamdeckpowermanager",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "22.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "steamdeck-power-manager",
+    "modules": [
+        {
+            "name": "steamdeck-power-manager",
+            "buildsystem": "simple",
+            "build-commands": [
+                "mkdir -p /app/lib/steamdeck-power-manager",
+                "cp -r core /app/lib/steamdeck-power-manager/",
+                "cp -r control /app/lib/steamdeck-power-manager/",
+                "cp -r utils /app/lib/steamdeck-power-manager/",
+                "cp config/default_config.json /app/lib/steamdeck-power-manager/config.json",
+                "install -Dm755 steamdeck-power-manager.sh /app/bin/steamdeck-power-manager"
+            ],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "."
+                }
+            ]
+        }
+    ]
+}
